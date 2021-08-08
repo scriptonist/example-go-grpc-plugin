@@ -2,11 +2,12 @@ package cli
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 
 	"github.com/hashicorp/go-plugin"
+	"github.com/olekukonko/tablewriter"
 
 	todoplugin "github.com/scriptonist/example-go-grpc-plugin/plugin/pkg/plugin"
 )
@@ -68,6 +69,9 @@ func (c *CLI) GetTodo(opts GetTodoOpts) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(todo)
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"id", "description", "completed"})
+	table.Append([]string{todo.Id, todo.Description, strconv.FormatBool(todo.Completed)})
+	table.Render()
 	return nil
 }

@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/hashicorp/go-plugin"
 	todoplugin "github.com/scriptonist/example-go-grpc-plugin/plugin/pkg/plugin"
-	"github.com/scriptonist/example-go-grpc-plugin/service/internal/todo"
+	"github.com/scriptonist/example-go-grpc-plugin/todo-fs/internal/todo"
 )
 
 func main() {

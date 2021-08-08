@@ -2,9 +2,9 @@ package todo
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -12,7 +12,6 @@ import (
 	"github.com/scriptonist/example-go-grpc-plugin/plugin/pkg/plugin"
 )
 
-// t *Todo
 type Todo struct {
 	dataDirectory string
 }
@@ -25,10 +24,24 @@ func New() *Todo {
 	}
 }
 
+type Item struct {
+	ID          string
+	Description string
+	Completed   bool
+}
+
 func (t *Todo) Create(_ context.Context, description string) error {
 	id := uuid.New()
-	log.Println(id.String())
-	return ioutil.WriteFile(filepath.Join(t.dataDirectory, id.String()), []byte(description), 0655)
+	item := Item{
+		ID:          id.String(),
+		Description: description,
+		Completed:   false,
+	}
+	b, err := json.Marshal(item)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(filepath.Join(t.dataDirectory, id.String()), b, 0655)
 }
 
 func (t *Todo) Read(_ context.Context, id string) (*plugin.TodoItem, error) {
@@ -40,9 +53,14 @@ func (t *Todo) Read(_ context.Context, id string) (*plugin.TodoItem, error) {
 	if err != nil {
 		return nil, fmt.Errorf("reading contents failed")
 	}
+	var item Item
+	err = json.Unmarshal(contents, &item)
+	if err != nil {
+		return nil, err
+	}
 	return &plugin.TodoItem{
-		Id:          id,
-		Completed:   false,
-		Description: string(contents),
+		Id:          item.ID,
+		Completed:   item.Completed,
+		Description: item.Description,
 	}, nil
 }
