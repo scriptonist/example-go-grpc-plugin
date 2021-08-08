@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package api;
+
+option go_package = "github.com/scriptonist/grpc-todo-example/pkg/proto";
+
+import "google/protobuf/empty.proto";
+
+service Todo {
+	rpc Create(CreateRequest) returns (google.protobuf.Empty) {}
+	rpc Read(ReadRequest) returns (TodoItem) {}
+}
+
+message ReadRequest {
+	string id = 1;
+}
+
+message CreateRequest {
+	string description = 1;
+}
+
+message TodoItem {
+	string id = 1;
+	string description = 2;
+	bool completed = 3;
+}
